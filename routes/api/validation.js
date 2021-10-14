@@ -5,6 +5,8 @@ const patterns = {
   phone:
     /^(?:\+\s?\d{1,2}\s?)?(?:\(\d{1,4}\)|\d{1,4})?\s?\d+([-\s/.]?)(?:\d\1?)+\d$/,
   id: /^[\da-f]{24}$/,
+  phone: /^(?:\+\s?\d+\s?)?(?:\(\d{1,4}\))?(?:[-\s./]?\d){5,}$/,
+  id: /^\d+$|^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/,
 };
 
 const schemaContact = Joi.object({
@@ -24,6 +26,8 @@ const schemaContactPatch = Joi.object({
 const schemaContactStatusPatch = Joi.object({
   favorite: Joi.boolean().required(),
 });
+
+}).min(1);
 
 const schemaContactId = Joi.object({
   contactId: Joi.string().pattern(patterns.id).required(),
