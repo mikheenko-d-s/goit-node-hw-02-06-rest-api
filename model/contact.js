@@ -1,24 +1,36 @@
-const { Schema, model } = require('mongoose');
-const { ValidContactName } = require('../config/constant');
+const { Schema, model, SchemaTypes } = require("mongoose");
+const { ValidLengthContactName } = require("../config/constants");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const contactSchema = new Schema(
   {
     name: {
       type: String,
-      min: ValidContactName.MIN_LENGTH,
-      max: ValidContactName.MIN_LENGTH,
-      required: [true, 'Set name for contact'],
+      minLength: ValidLengthContactName.MIN_LENGTH_NAME,
+      maxLength: ValidLengthContactName.MAX_LENGTH_NAME,
+      required: [true, "Set name for contact"],
+    },
+    surname: {
+      type: String,
+      minLength: ValidLengthContactName.MIN_LENGTH_NAME,
+      maxLength: ValidLengthContactName.MAX_LENGTH_NAME,
+      required: [true, "Set surname for contact"],
     },
     email: {
       type: String,
-      required: [true, 'Set email for contact'],
+      required: [true, "Set email for contact"],
       unique: true,
     },
     phone: {
       type: String,
-      required: [true, 'Set phone for contact'],
+      required: [true, "Set phone for contact"],
+      unique: true,
     },
     favorite: { type: Boolean, default: false },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: "user",
+    },
   },
   {
     versionKey: false,
@@ -31,9 +43,17 @@ const contactSchema = new Schema(
       },
     },
     toObject: { virtuals: true },
-  },
+  }
 );
 
-const Contact = model('Contact', contactSchema);
+contactSchema.virtual("fullname").get(function () {
+  return `${this.name} ${this.surname}`;
+});
 
-module.exports = Contact;
+contactSchema.plugin(mongoosePaginate);
+
+const Contact = model("Contact", contactSchema);
+
+module.exports = {
+  Contact,
+};

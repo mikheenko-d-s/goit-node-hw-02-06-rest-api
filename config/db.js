@@ -1,26 +1,33 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-require('dotenv').config();
-const uriDb = process.env.DB_HOST;
+let uri;
 
-const db = mongoose.connect(uriDb, {
+if (process.env.NODE_ENV == "test") {
+  uri = process.env.URI_DB_TEST;
+} else {
+  uri = process.env.URI_DB;
+}
+
+const db = mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-mongoose.connection.on('connected', () => {
-  console.log('Database connection successful');
-});
+if (process.env.NODE_ENV == "test") {
+  mongoose.connection.on("connected", () => {
+    console.log("Mongoose connection to DB");
+  });
 
-mongoose.connection.on('error', err => {
-  console.log(`Database connection error ${err.message}`);
-  process.exit(1);
-});
+  mongoose.connection.on("error", (err) => {
+    console.log(`Mongoose connection error ${err.message}`);
+  });
+}
 
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   await mongoose.connection.close();
-  console.log('Database connection closed');
-  process.exit();
+  console.log("Connection to DB closed.");
+  process.exit(1);
 });
 
 module.exports = db;
