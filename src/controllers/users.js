@@ -1,10 +1,14 @@
 const jwt = require("jsonwebtoken");
+
 const fs = require("fs/promises"); // cloud
 // const path = require("path"); // local
 // const mkdirp = require("mkdirp"); // local
 const Users = require("../../repository/users");
 // const UploadService = require("../../services/file-upload"); // local
 const UploadService = require("../../services/cloud-upload"); // cloud
+
+const Users = require("../../repository/users");
+
 const { HttpCode, Subscription } = require("../../config/constants");
 require("dotenv").config();
 const { CustomError } = require("../../helpers/customError");
@@ -30,7 +34,9 @@ const signup = async (req, res, next) => {
         id: newUser.id,
         email: newUser.email,
         subscription: newUser.subscription,
+
         avatarURL: newUser.avatarURL,
+
       },
     });
   } catch (error) {
@@ -41,7 +47,11 @@ const signup = async (req, res, next) => {
 const login = async (req, res, _next) => {
   const { email, password } = req.body;
   const user = await Users.findByEmail(email);
+
   const isValidPassword = await user?.isValidPassword(password);
+
+  const isValidPassword = await user.isValidPassword(password);
+
 
   if (!user || !isValidPassword) {
     return res.status(HttpCode.UNAUTHORIZED).json({
@@ -133,6 +143,7 @@ const userBusiness = async (req, res) => {
   });
 };
 
+
 // // Local
 // const uploadAvatar = async (req, res, next) => {
 //   const id = String(req.user._id);
@@ -186,5 +197,7 @@ module.exports = {
   userStarter,
   userPro,
   userBusiness,
+
   uploadAvatar,
+
 };
