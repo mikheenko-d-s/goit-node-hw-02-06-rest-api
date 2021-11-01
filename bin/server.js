@@ -1,5 +1,15 @@
 const db = require("../config/db");
 const app = require("../app");
+const mkdirp = require("mkdirp");
+require("dotenv").config();
+const UPLOAD_DIR = process.env.UPLOAD_DIR;
+const AVATAR_OF_USERS = process.env.AVATAR_OF_USERS;
+const PORT = process.env.PORT || 3000;
+
+db.then(() => {
+  app.listen(PORT, async () => {
+    await mkdirp(UPLOAD_DIR);
+    await mkdirp(AVATAR_OF_USERS);
 
 const PORT = process.env.PORT || 3000;
 
